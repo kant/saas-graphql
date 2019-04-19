@@ -2,7 +2,7 @@
 
 <br />
 
-<div align="center"><img src="https://github.com/davodesign/saas-graphql/logos.svg" /></div>
+<div align="center"><img src="https://github.com/davodesign84/saas-graphql/blob/master/logos.svg" /></div>
 
 <div align="center"><strong>Start your Saas Project in a matter of seconds</strong></div>
 <div align="center">Saas-Graphql allows you to get the basic scaffolding for your Saas Project up and running in seconds</div>
