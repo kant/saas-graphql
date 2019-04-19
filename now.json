@@ -1,0 +1,11 @@
+{
+    "version": 2,
+    "builds": [{ "src": "src/index.ts", "use": "@now/node-server" }],
+    "env": {
+        "SECRET": "@SECRET",
+        "DATABASE_URI": "@DATABASE_URI"
+    },
+    "routes": [{
+        "src": "/.*", "dest": "src/index.ts"
+        }]
+  }
