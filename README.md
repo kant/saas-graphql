@@ -21,6 +21,7 @@
 - Clone the project: `git clone https://github.com/davodesign84/saas-graphql` and `cd aas-graphql`
 - Run `yarn` or `npm install` to install dependencies
 - Install Zeit now, instructions can be found [here](https://zeit.co/download).
+- add your `DATABASE_URI`  (for the mongodb connection) and `SECRET` (for the JWT generation) secrets to a `.env` file in your root folder
 - Generate the token secret [here](https://mkjwk.org/) and add it to Now `now secret add SECRET <your token secret>`
 - Add your mongodb URI `now secret add DATABASE_URI <your token secret>`
 - Run dev `now dev` and open `localhost:3000`
