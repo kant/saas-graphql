@@ -35,237 +35,291 @@ export const generateState = () => ({
     }]
 })
 
+const passiveOwner = 1
+const passiveAdmin = 3
+const passiveUser = 5
+
+const changeName = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.name = 'NEW NAME'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const removeOwner = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.splice(passiveOwner,1);
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const removeAdmin = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.splice(passiveAdmin,1);
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const removeUser = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.splice(passiveUser,1);
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const upgradeUserToAdmin = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveUser].role === 'ADMIN'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const upgradeUserToOwner = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveUser].role === 'OWNER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const downGradeAdminToUser = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveAdmin].role === 'USER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const upgradeAdminToOwner = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveAdmin].role === 'OWNER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const downGradeOwnerToUser = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveOwner].role === 'USER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const downGradeOwnerToAdmin = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[passiveOwner].role === 'ADMIN'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const removeSelf = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.splice(actingID,1);
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const setSelfAsUser = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[actingID].role === 'USER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const setSelfAsAdmin = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[actingID].role === 'ADMIN'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const setSelfAsOwner = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members[actingID].role === 'OWNER'
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const inviteUser = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.push({
+        role: 'USER',
+        user: {
+            id: 'new'
+        }
+    })
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const inviteAdmin = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.push({
+        role: 'ADMIN',
+        user: {
+            id: 'new'
+        }
+    })
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
+const inviteOwner = (actingID) => {
+    const initialState = generateState()
+    const newState = generateState();
+    newState.members.push({
+        role: 'ADMIN',
+        user: {
+            id: 'new'
+        }
+    })
+    return membersPermissionFilter(initialState, newState, actingID)
+}
+
 describe('OWNER Permissions Tests', () => {
+    const actingID = '0'
     it('should allow an OWNER to change name of the organization', () => {
-        const initialState = generateState()
-        const newState = generateState();
-        newState.name = 'NEW NAME'
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true)
-    })
-    it('should not allow last OWNER to remove himself, if the last one', () => {
-        const initialState = generateState()
-            initialState.members.splice(0,1)
-        const newState = generateState();
-            newState.members.splice(0,2)
-        const result = membersPermissionFilter(initialState, newState, '1')
-        expect(result).toBe(false)
+        expect(changeName(actingID)).toBe(true)
     })
 
-    it('should allow an OWNER to remove another OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(0,1);
-        const result = membersPermissionFilter(initialState, newState, '1')
-        expect(result).toBe(true);
-    })
-
-    it('should allow an OWNER to edit another OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[0].role === 'ADMIN'
-        const result = membersPermissionFilter(initialState, newState, '1')
-        expect(result).toBe(true);
+    it('should allow an OWNER to remove an OWNER', () => {
+        expect(removeOwner(actingID)).toBe(true);
     })
 
     it('should allow an OWNER to remove an ADMIN', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(2,1);
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+        expect(removeAdmin(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER to edit an ADMIN', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[2].role === "USER"
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to remove an USER', () => {
+        expect(removeUser(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER to remove a USER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(4,1);
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an USER as an ADMIN', () => {
+        expect(upgradeUserToAdmin(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER to edit a USER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[4].role === "ADMIN"
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an USER as an OWNER', () => {
+        expect(upgradeUserToOwner(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER to leave the organization, if not the last one', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(0,1)
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an ADMIN as an USER', () => {
+        expect(downGradeAdminToUser(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER to edit himself, if not the last one', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[0].role === "ADMIN"
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an ADMIN as an OWNER', () => {
+        expect(upgradeAdminToOwner(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER invite a USER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.push({
-                role: 'USER',
-                user: {
-                    id: 'new'
-                }
-            })
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an OWNER as an USER', () => {
+        expect(downGradeOwnerToUser(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER invite an ADMIN', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.push({
-                role: 'ADMIN',
-                user: {
-                    id: 'new'
-                }
-            })
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to set an OWNER as an ADMIN', () => {
+        expect(downGradeOwnerToAdmin(actingID)).toBe(true);
     })
 
-    it('should allow an OWNER invite an OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.push({
-                role: 'OWNER',
-                user: {
-                    id: 'new'
-                }
-            })
-        const result = membersPermissionFilter(initialState, newState, '0')
-        expect(result).toBe(true);
+    it('should allow an OWNER to leave the organization', () => {
+        expect(removeSelf(actingID)).toBe(true);
     })
+    
+    it('should allow an OWNER to leave the organization if no other owner', () => {
+        const initialState = generateState()
+        initialState.members.splice(0, 1)
+        const newState = generateState();
+        newState.members.splice(0,2);
+        const result =  membersPermissionFilter(initialState, newState, actingID)
+        expect(result).toBe(false);
+    })
+
+    it('should allow an OWNER to set himself as ADMIN', () => {
+        expect(setSelfAsAdmin(actingID)).toBe(true);
+    })
+
+    it('should allow an OWNER to set himself as USER', () => {
+        expect(setSelfAsUser(actingID)).toBe(true);
+    })
+
+    it('should allow an OWNER to set himself as OWNER', () => {
+        expect(setSelfAsOwner(actingID)).toBe(true);
+    })
+
+    it('should allow an OWNER to invite a USER', () => {
+        expect(inviteUser(actingID)).toBe(true);
+    })
+
+    it('should allow an OWNER to invite an ADMIN', () => {
+        expect(inviteAdmin(actingID)).toBe(true);
+    })
+
+    it('should allow an OWNER to invite an OWNER', () => {
+        expect(inviteOwner(actingID)).toBe(true);
+    })    
 })
 
 describe('USER Permissions Tests', () => {
+    const actingID = '4'
     it('should not allow a USER to change name of the organization', () => {
-        const initialState = generateState()
-        const newState = generateState();
-        newState.name = 'NEW NAME'
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false)
-    })
-    it('should not allow a USER to remove a OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(0,1)
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false)
+        expect(changeName(actingID)).toBe(false)
     })
 
-    it('should not allow a USER to edit a OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[0].role === 'ADMIN'
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to remove an OWNER', () => {
+        expect(removeOwner(actingID)).toBe(false);
     })
 
     it('should not allow a USER to remove an ADMIN', () => {
-        const initialState = generateState()
-            initialState.members.splice(0,1)
-        const newState = generateState();
-            newState.members.splice(2,1)
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+        expect(removeAdmin(actingID)).toBe(false);
     })
 
-    it('should not allow an USER to edit an ADMIN', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[2].role === 'USER'
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to remove an USER', () => {
+        expect(removeUser(actingID)).toBe(false);
     })
 
-    it('should not allow a USER to remove a USER', () => {
-        const initialState = generateState()
-            initialState.members.splice(0,1)
-        const newState = generateState();
-            newState.members.splice(4,1)
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to set an USER as an ADMIN', () => {
+        expect(upgradeUserToAdmin(actingID)).toBe(false);
     })
 
-    it('should not allow a USER to edit a USER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[4].role === 'ADMIN'
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to set an USER as an OWNER', () => {
+        expect(upgradeUserToOwner(actingID)).toBe(false);
+    })
+
+    it('should not allow a USER to set an ADMIN as an USER', () => {
+        expect(downGradeAdminToUser(actingID)).toBe(false);
+    })
+
+    it('should not allow a USER to set an ADMIN as an OWNER', () => {
+        expect(upgradeAdminToOwner(actingID)).toBe(false);
+    })
+
+    it('should not allow a USER to set an OWNER as an USER', () => {
+        expect(downGradeOwnerToUser(actingID)).toBe(false);
+    })
+
+    it('should not allow a USER to set an OWNER as an ADMIN', () => {
+        expect(downGradeOwnerToAdmin(actingID)).toBe(false);
     })
 
     it('should allow a USER to leave the organization', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members.splice(5,1)
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(true);
+        expect(removeSelf(actingID)).toBe(true);
     })
 
-    it('should not allow a USER invite an OWNER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-        newState.members.push({
-            role: 'OWNER',
-            user: {
-                id: 'new'
-            }
-        })
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to set himself as ADMIN', () => {
+        expect(setSelfAsAdmin(actingID)).toBe(false);
     })
 
-    it('should not allow a USER invite an ADMIN', () => {
-        const initialState = generateState()
-        const newState = generateState();
-        newState.members.push({
-            role: 'ADMIN',
-            user: {
-                id: 'new'
-            }
-        })
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to set himself as USER', () => {
+        expect(setSelfAsUser(actingID)).toBe(false);
     })
 
-    it('should not allow a USER invite a USER', () => {
-        const initialState = generateState()
-        const newState = generateState();
-        newState.members.push({
-            role: 'USER',
-            user: {
-                id: 'new'
-            }
-        })
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to set himself as OWNER', () => {
+        expect(setSelfAsOwner(actingID)).toBe(false);
     })
 
-    it('should not allow an USER to edit himself', () => {
-        const initialState = generateState()
-        const newState = generateState();
-            newState.members[5].role === "ADMIN"
-        const result = membersPermissionFilter(initialState, newState, '5')
-        expect(result).toBe(false);
+    it('should not allow a USER to invite a USER', () => {
+        expect(inviteUser(actingID)).toBe(false);
     })
+
+    it('should not allow a USER to invite an ADMIN', () => {
+        expect(inviteAdmin(actingID)).toBe(false);
+    })
+
+    it('should not allow a USER to invite an OWNER', () => {
+        expect(inviteOwner(actingID)).toBe(false);
+    })    
 })
