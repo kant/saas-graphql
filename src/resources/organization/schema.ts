@@ -9,7 +9,12 @@ export const organizationTypeDefs = gql`
   type Organization {
     id: ID!
     name: String!
-    members: [User]!
+    members: [Role]!
+  }
+
+  type Role {
+    role: RoleEnum!
+    user: User!
   }
 
   enum RoleEnum {
@@ -42,10 +47,12 @@ export const organizationResolvers: IResolverSet = {
   Query: {
     async organizations(_, {}, context) {
       const orgs: IOrganization[] = await Organization.find({"members.user": ObjectId(context.user)})
+        .populate('members.user')
       return orgs.map(org => org.toObject());
     },
     async organization(_, { id }, context) {
-      const organization: IOrganization | null = await Organization.findOne({ _id: id, 'members.user': ObjectId(context.user)});
+      const organization: IOrganization | null = await Organization.findOne({ _id: id, 'members.user': ObjectId(context.user)})
+      .populate('members.user')
       return organization ? organization.toObject() : null;
     },
   },
