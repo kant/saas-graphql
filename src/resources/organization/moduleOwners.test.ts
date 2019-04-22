@@ -253,6 +253,77 @@ describe('OWNER Permissions Tests', () => {
     })    
 })
 
+describe('ADMIN Permissions Tests', () => {
+    const actingID = '2'
+    it('should not allow a ADMIN to change name of the organization', () => {
+        expect(changeName(actingID)).toBe(false)
+    })
+
+    it('should not allow a ADMIN to remove an OWNER', () => {
+        expect(removeOwner(actingID)).toBe(false);
+    })
+
+    it('should not allow a ADMIN to remove an ADMIN', () => {
+        expect(removeAdmin(actingID)).toBe(false);
+    })
+
+    it('should allow a ADMIN to remove an USER', () => {
+        expect(removeUser(actingID)).toBe(true);
+    })
+
+    it('should allow a ADMIN to set an USER as an ADMIN', () => {
+        expect(upgradeUserToAdmin(actingID)).toBe(true);
+    })
+
+    it('should not allow a ADMIN to set an USER as an OWNER', () => {
+        expect(upgradeUserToOwner(actingID)).toBe(false);
+    })
+
+    it('should not allow a ADMIN to set an ADMIN as an USER', () => {
+        expect(downGradeAdminToUser(actingID)).toBe(false);
+    })
+
+    it('should not allow a ADMIN to set an ADMIN as an OWNER', () => {
+        expect(upgradeAdminToOwner(actingID)).toBe(false);
+    })
+
+    it('should not allow a ADMIN to set an OWNER as an USER', () => {
+        expect(downGradeOwnerToUser(actingID)).toBe(false);
+    })
+
+    it('should not allow a ADMIN to set an OWNER as an ADMIN', () => {
+        expect(downGradeOwnerToAdmin(actingID)).toBe(false);
+    })
+
+    it('should allow a ADMIN to leave the organization', () => {
+        expect(removeSelf(actingID)).toBe(true);
+    })
+
+    it('should allow a ADMIN to set himself as ADMIN', () => {
+        expect(setSelfAsAdmin(actingID)).toBe(true);
+    })
+
+    it('should allow a ADMIN to set himself as USER', () => {
+        expect(setSelfAsUser(actingID)).toBe(true);
+    })
+
+    it('should not allow a ADMIN to set himself as OWNER', () => {
+        expect(setSelfAsOwner(actingID)).toBe(false);
+    })
+
+    it('should allow a ADMIN to invite a USER', () => {
+        expect(inviteUser(actingID)).toBe(true);
+    })
+
+    it('should allow a ADMIN to invite an ADMIN', () => {
+        expect(inviteAdmin(actingID)).toBe(true);
+    })
+
+    it('should not allow a ADMIN to invite an OWNER', () => {
+        expect(inviteOwner(actingID)).toBe(false);
+    })    
+})
+
 describe('USER Permissions Tests', () => {
     const actingID = '4'
     it('should not allow a USER to change name of the organization', () => {
