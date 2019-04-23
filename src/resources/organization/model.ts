@@ -1,12 +1,14 @@
 import mongoose, { Document } from 'mongoose';
 import { IUser } from '../user/model';
 
-export interface IOrganization extends Document {
-  name?: String;
-  members?: Array<{
+export interface IMember {
     role: String;
     user: IUser;
-  }>
+}
+
+export interface IOrganization extends Document {
+  name: String;
+  members: IMember[];
 }
 
 const organizationSchema = new mongoose.Schema({

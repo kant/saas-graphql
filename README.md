@@ -30,6 +30,80 @@
 
 Enjoy! You just saved a couple of days of faffing around with boring stuff 🤴
 
+
+## Structure
+At the core of Saas-GraphQL there are three concepts: Organization, Project and User.
+An Organization is the bucket of users and projects, think of it as your client company.
+A Project is like a workspace, a bucket where you can all the different activities of your client company, think of it as a Mixpanel project or a Trello board.
+A User is a member of your client company. Each User can have one of three roles, OWNER, ADMIN and USER, where OWNER » ADMIN » USER.
+
+## Create User and Login
+To create a user:
+```
+mutation {
+    createUser(input: {
+        email: "test@test.com"
+        password: "test"
+        firstName: "John"
+        lastName: "Doe"
+    }) {
+        id
+    }
+}
+```
+
+then login the user
+
+```
+mutation login {
+  loginUser(input:{
+    email:"test@test.com"
+    password: "test"
+  }) {
+    jwt
+  }
+}
+```
+
+This will return you the JWT token which needs to be attached to every subsequent call made to the GraphQL endpoint, as it is used to check permissions.
+
+
+## Permissions
+Permissions for the members of an Organization are currently hard-coded (PRs for making it more flexible are more than welcome) but follow these simple rules:
+ - *Owners* can do everything except for removing themselves if that leaves the Organization with no Owner;
+ - *Admins* can do everything except
+ - - Changing name of the organization
+ - - Editing / Removing or Inviting Owners
+ - - Editing / Removing any other ADMIN but themselves
+ - *Users* can only remove themselves from an Organization
+
+ Permissions are inferred from the User ID attached to the JWT token in the `Authorization` header.
+
+ to edit members (and their relevant permissions) simply make a call to with the `editOrganization` operation:
+ ```
+ mutation edit {
+  editOrganization(input:{
+    organization: "<organizationID>"
+    name: "Changed Name"
+    members: [{
+      role: OWNER
+      user: "<userID>"
+    },{
+      role: ADMIN
+      user: "<anotherUserID>"
+    }]
+  }) {
+    name
+    members {
+      role
+      user {
+        id
+      }
+    }
+  }
+}
+```
+
 ## Contributing
 
 Your feedback is **very helpful**, please share your opinion and thoughts! If you have any questions or want to contribute yourself, please create an issue or feel free to contributes to PR directly, Jest tests would be very welcome! 🙏

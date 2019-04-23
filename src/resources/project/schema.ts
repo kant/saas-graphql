@@ -1,7 +1,7 @@
 import Project, { IProject }  from './model';
-import Organization, { IOrganization } from '../organization/model'
+import Organization from '../organization/model'
 import { gql } from 'apollo-server'
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 import { IResolverSet } from '../root'
 
@@ -45,7 +45,7 @@ export const projectTypeDefs = gql`
 export const projectResolvers: IResolverSet = {
   Query: {
     async projects(_, { input }, context) {
-      const organization : IOrganization | null = await Organization.findOne({ _id: input.organization, "members.user": ObjectId(context.user )})
+      const organization : Document | null = await Organization.findOne({ _id: input.organization, "members.user": ObjectId(context.user )})
       if (organization) {
         const projects: IProject[] = await Project.find({ organization: input.organization})
         return projects.map(project => project.toObject());
@@ -55,7 +55,7 @@ export const projectResolvers: IResolverSet = {
     },
     async project(_, { id }, context) {
       const project: IProject | null = await Project.findOne({ _id: id })
-      const organization : IOrganization | null = project ? await Organization.findOne({ _id: project.organization, "members.user": ObjectId(context.user )}) : null
+      const organization : Document | null = project ? await Organization.findOne({ _id: project.organization, "members.user": ObjectId(context.user )}) : null
       if (organization ) {
         return project
       } else {
@@ -65,7 +65,7 @@ export const projectResolvers: IResolverSet = {
   },
   Mutation: {
     async addProject(_, { input }, context) {
-      const organization: IOrganization | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId( context.user ) })
+      const organization: Document | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId( context.user ) })
       if (organization) {
         const project: IProject | null = await Project.create(input)
         return project.toObject();
@@ -74,7 +74,7 @@ export const projectResolvers: IResolverSet = {
       }
     },
     async editProject(_, { input }, context) {
-      const organization: IOrganization | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId( context.user ) })
+      const organization: Document | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId( context.user ) })
       const project: IProject | null = await Project.findOneAndUpdate({_id: input.id , organization: input.organization}, input, {new: true});
         if (organization && project) {
         return project.toObject();
@@ -83,7 +83,7 @@ export const projectResolvers: IResolverSet = {
       }
     },
     async deleteProject(_, { input }, context) {
-      const organization: IOrganization | null = await Organization.findOne({
+      const organization: Document | null = await Organization.findOne({
         _id: ObjectId( input.organization),
         members: {
           $elemMatch : {
