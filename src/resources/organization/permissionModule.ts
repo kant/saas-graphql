@@ -1,30 +1,35 @@
-import * as R from 'ramda'
-import { IUser } from '../user/model';
+import R from 'ramda'
+import { IOrganization } from './model';
 
-interface IMember {
+interface IMemberInput {
     role: String;
-    user: IUser | {
-        id: string;
-    }
+    user: String;
 }
 
 export interface IPermissionInput {
-    name?: String;
-    members?: IMember[]
+    name: String;
+    members: IMemberInput[]
 }
 
 const isOwner = R.propEq('role', 'OWNER');
 const isAdmin = R.propEq('role', 'ADMIN');
-const isUser = R.propEq('role', 'USER');
-const isSameUser = (a: IMember, b: IMember) => a.user.id === b.user.id;
-const isSameUserAndRole = (a: IMember, b: IMember) => a.role === b.role && a.user.id === b.user.id;
+const isSameUser = (a: IMemberInput, b: IMemberInput) => a.user === b.user;
+const isSameUserAndRole = (a: IMemberInput, b: IMemberInput) => a.role === b.role && a.user === b.user;
+
+export const mapOrganizationToInput: ((org: any) => IPermissionInput) = (a) => {
+    const output = {
+        name: a.name,
+        members: a.members.map(i => ({ role: i.role, user: i.user.id }))
+    }
+    return output;
+};
 
 export const membersPermissionFilter = (initialOrg: IPermissionInput, newOrg: IPermissionInput, userId: string) => {
-    const user = initialOrg.members && initialOrg.members.find(member => member.user.id === userId);
-    const newUser = newOrg.members && newOrg.members.find(member => member.user.id === userId);
+    const oldUsers = initialOrg.members
+    const newUsers = newOrg.members
+    const user = oldUsers.find(member => member.user === userId);
+    const newUser = newUsers.find(member => member.user === userId);
     const role = user && user.role;
-    const oldUsers = initialOrg.members || [];
-    const newUsers = newOrg.members;
 
     // If the user is not member of the organization fail the call
     if(!role) {
@@ -53,8 +58,8 @@ export const membersPermissionFilter = (initialOrg: IPermissionInput, newOrg: IP
     }
 
     if (role === 'ADMIN') {
-        const removedUsers = R.differenceWith(isSameUser, oldUsers, newUsers).filter(e => e.user.id !== userId);
-        const updatedUsers = R.differenceWith(isSameUserAndRole, oldUsers, newUsers).filter(e => e.user.id !== userId);
+        const removedUsers = R.differenceWith(isSameUser, oldUsers, newUsers).filter(e => e.user !== userId);
+        const updatedUsers = R.differenceWith(isSameUserAndRole, oldUsers, newUsers).filter(e => e.user !== userId);
         const sameOWners = R.symmetricDifferenceWith(isSameUserAndRole, oldUsers.filter(isOwner), newUsers.filter(isOwner)).length === 0;
         
         if(!sameOWners) {

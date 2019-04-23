@@ -1,37 +1,26 @@
-import { membersPermissionFilter } from  './permissionModule';
+import { membersPermissionFilter, mapOrganizationToInput } from  './permissionModule';
+import { IOrganization } from './model';
 
 export const generateState = () => ({
     name: 'INITIAL NAME',
     members: [{
         role: 'OWNER',
-        user: {
-            id: '0',
-        },
+        user: '0',
     }, {
         role: 'OWNER',
-        user: {
-            id: '1',
-        },
+        user: '1',
     },{
         role: 'ADMIN',
-        user: {
-            id: '2',
-        },
+        user: '2',
     },{
         role: 'ADMIN',
-        user: {
-            id: '3',
-        },
+        user: '3',
     },{
         role: 'USER',
-        user: {
-            id: '4',
-        },
+        user: '4',
     },{
         role: 'USER',
-        user: {
-            id: '5',
-        },
+        user: '5',
     }]
 })
 
@@ -44,18 +33,21 @@ const changeName = (actingID: string, role: string) => {
         name: 'TEST',
         members: [{
             role: 'OWNER',
-            user: {
-                id: '0'
-            }
+            user: '0'
         },{
             role,
-            user: {
-                id: actingID
-            }
+            user: actingID
         }]
     }
     const newState = {
-        name: 'NEW TEST NAME'
+        name: 'NEW TEST NAME',
+        members: [{
+            role: 'OWNER',
+            user: '0'
+        },{
+            role,
+            user: actingID
+        }]
     }
     return membersPermissionFilter(initialState, newState, actingID)
 }
@@ -156,9 +148,7 @@ const inviteUser = (actingID: string) => {
     const newState = generateState();
     newState.members.push({
         role: 'USER',
-        user: {
-            id: 'new'
-        }
+        user: 'new'
     })
     return membersPermissionFilter(initialState, newState, actingID)
 }
@@ -168,9 +158,7 @@ const inviteAdmin = (actingID: string) => {
     const newState = generateState();
     newState.members.push({
         role: 'ADMIN',
-        user: {
-            id: 'new'
-        }
+        user: 'new'
     })
     return membersPermissionFilter(initialState, newState, actingID)
 }
@@ -180,12 +168,32 @@ const inviteOwner = (actingID: string) => {
     const newState = generateState();
     newState.members.push({
         role: 'OWNER',
-        user: {
-            id: 'new'
-        }
+        user: 'new'
     })
     return membersPermissionFilter(initialState, newState, actingID)
 }
+
+describe('Map Organization To MemberInput', () => {
+    it('should map an Organization to a MemberInput', () => {
+        const source = {
+            name: 'TEST',
+            members: [{
+                role: 'TEST',
+                user: {
+                    id: 'testId'
+                }
+            }]
+        };
+        const expected = {
+            name: 'TEST',
+            members: [{
+                role: 'TEST',
+                user: 'testId'
+            }]
+        }
+        expect(mapOrganizationToInput(source)).toEqual(expected)
+    })
+})
 
 describe('OWNER Permissions Tests', () => {
     const actingID = '0'

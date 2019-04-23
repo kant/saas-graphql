@@ -28,10 +28,10 @@ export const userTypeDefs = gql`
     me: User
   }
   input UserInput {
-    email: String
-    password: String
-    firstName: String
-    lastName: String
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
   }
   extend type Mutation {
     createUser(input: UserInput!): User

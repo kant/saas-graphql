@@ -7,8 +7,8 @@ export interface IMember {
 }
 
 export interface IOrganization extends Document {
-  name?: String;
-  members?: IMember[];
+  name: String;
+  members: IMember[];
 }
 
 const organizationSchema = new mongoose.Schema({
