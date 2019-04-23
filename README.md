@@ -83,8 +83,8 @@ Permissions for the members of an Organization are currently hard-coded (PRs for
  ```
  mutation edit {
   editOrganization(input:{
-    organization: "5cb9cb6d1f8c676476d8b025"
-    name: "Changed Name 2"
+    organization: "<organizationID>"
+    name: "Changed Name"
     members: [{
       role: OWNER
       user: "<userID>"
