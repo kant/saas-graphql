@@ -1,7 +1,8 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose from 'mongoose';
 import { gql } from 'apollo-server'
 import Organization, { IOrganization } from './model';
 import { IResolverSet } from '../root'
+import { membersPermissionFilter } from './permissionModule'; 
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -17,6 +18,11 @@ export const organizationTypeDefs = gql`
     user: User!
   }
 
+  input RoleInput {
+    role: RoleEnum!
+    user: String!
+  }
+
   enum RoleEnum {
     OWNER
     ADMIN
@@ -29,6 +35,7 @@ export const organizationTypeDefs = gql`
   input EditOrganizationInput {
     organization: String!
     name: String!
+    members: [RoleInput]!
   }
   input OrganizationFilterInput {
     limit: Int
@@ -66,21 +73,16 @@ export const organizationResolvers: IResolverSet = {
       return organization.toObject();
     },
     async editOrganization(_, { input }, context) {
-      const organization: IOrganization | null = await Organization.findOneAndUpdate({
-        _id: ObjectId( input.organization),
-        members: {
-          $elemMatch : {
-            $or: [{
-              user: ObjectId(context.user),
-              role: "OWNER"
-            },{
-              user: ObjectId(context.user),
-              role: "ADMIN"
-            }]
-          }
-        }
-      }, { name: input.name }, { new: true })
-      return organization;
+      const organization: IOrganization | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId(context.user)})
+        .populate('members.user');
+      if (organization) {
+        membersPermissionFilter(organization, input, context.user)
+        const newOrganization = await Organization.findOneAndUpdate({ _id: input.organization, 'members.user': ObjectId(context.user)}, input, {new: true })
+          .populate('members.user')
+        return newOrganization;
+      } else {
+        throw new Error('Organization not found')
+      }
     }
   },
 };

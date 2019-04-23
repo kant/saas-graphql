@@ -39,105 +39,119 @@ const passiveOwner = 1
 const passiveAdmin = 3
 const passiveUser = 5
 
-const changeName = (actingID) => {
-    const initialState = generateState()
-    const newState = generateState();
-    newState.name = 'NEW NAME'
+const changeName = (actingID: string, role: string) => {
+    const initialState =  {
+        name: 'TEST',
+        members: [{
+            role: 'OWNER',
+            user: {
+                id: '0'
+            }
+        },{
+            role,
+            user: {
+                id: actingID
+            }
+        }]
+    }
+    const newState = {
+        name: 'NEW TEST NAME'
+    }
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const removeOwner = (actingID) => {
+const removeOwner = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveOwner,1);
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const removeAdmin = (actingID) => {
+const removeAdmin = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveAdmin,1);
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const removeUser = (actingID) => {
+const removeUser = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveUser,1);
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const upgradeUserToAdmin = (actingID) => {
+const upgradeUserToAdmin = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveUser].role === 'ADMIN'
+    newState.members[passiveUser].role = 'ADMIN'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const upgradeUserToOwner = (actingID) => {
+const upgradeUserToOwner = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveUser].role === 'OWNER'
+    newState.members[passiveUser].role = 'OWNER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const downGradeAdminToUser = (actingID) => {
+const downGradeAdminToUser = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveAdmin].role === 'USER'
+    newState.members[passiveAdmin].role = 'USER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const upgradeAdminToOwner = (actingID) => {
+const upgradeAdminToOwner = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveAdmin].role === 'OWNER'
+    newState.members[passiveAdmin].role = 'OWNER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const downGradeOwnerToUser = (actingID) => {
+const downGradeOwnerToUser = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveOwner].role === 'USER'
+    newState.members[passiveOwner].role = 'USER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const downGradeOwnerToAdmin = (actingID) => {
+const downGradeOwnerToAdmin = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[passiveOwner].role === 'ADMIN'
+    newState.members[passiveOwner].role = 'ADMIN'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const removeSelf = (actingID) => {
+const removeSelf = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members.splice(actingID,1);
+    newState.members.splice(parseInt(actingID, 10),1);
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const setSelfAsUser = (actingID) => {
+const setSelfAsUser = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[actingID].role === 'USER'
+    newState.members[actingID].role = 'USER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const setSelfAsAdmin = (actingID) => {
+const setSelfAsAdmin = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[actingID].role === 'ADMIN'
+    newState.members[actingID].role = 'ADMIN'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const setSelfAsOwner = (actingID) => {
+const setSelfAsOwner = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members[actingID].role === 'OWNER'
+    newState.members[actingID].role = 'OWNER'
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const inviteUser = (actingID) => {
+const inviteUser = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
@@ -149,7 +163,7 @@ const inviteUser = (actingID) => {
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const inviteAdmin = (actingID) => {
+const inviteAdmin = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
@@ -161,11 +175,11 @@ const inviteAdmin = (actingID) => {
     return membersPermissionFilter(initialState, newState, actingID)
 }
 
-const inviteOwner = (actingID) => {
+const inviteOwner = (actingID: string) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
-        role: 'ADMIN',
+        role: 'OWNER',
         user: {
             id: 'new'
         }
@@ -176,7 +190,7 @@ const inviteOwner = (actingID) => {
 describe('OWNER Permissions Tests', () => {
     const actingID = '0'
     it('should allow an OWNER to change name of the organization', () => {
-        expect(changeName(actingID)).toBe(true)
+        expect(changeName(actingID, 'OWNER')).toBe(true)
     })
 
     it('should allow an OWNER to remove an OWNER', () => {
@@ -219,13 +233,13 @@ describe('OWNER Permissions Tests', () => {
         expect(removeSelf(actingID)).toBe(true);
     })
     
-    it('should allow an OWNER to leave the organization if no other owner', () => {
+    it('should not allow an OWNER to leave the organization if no other owner', () => {
         const initialState = generateState()
-        initialState.members.splice(0, 1)
+        initialState.members.splice(1, 1)
         const newState = generateState();
         newState.members.splice(0,2);
-        const result =  membersPermissionFilter(initialState, newState, actingID)
-        expect(result).toBe(false);
+        const result = () => membersPermissionFilter(initialState, newState, actingID)
+        expect(result).toThrowError('Can not leave an organization if you are the last owner, make somebody else owner first.');
     })
 
     it('should allow an OWNER to set himself as ADMIN', () => {
@@ -256,15 +270,15 @@ describe('OWNER Permissions Tests', () => {
 describe('ADMIN Permissions Tests', () => {
     const actingID = '2'
     it('should not allow a ADMIN to change name of the organization', () => {
-        expect(changeName(actingID)).toBe(false)
+        expect(() => changeName(actingID, 'ADMIN')).toThrowError('Not allowed to change the name of this organization')
     })
 
     it('should not allow a ADMIN to remove an OWNER', () => {
-        expect(removeOwner(actingID)).toBe(false);
+        expect(() => removeOwner(actingID)).toThrow()
     })
 
     it('should not allow a ADMIN to remove an ADMIN', () => {
-        expect(removeAdmin(actingID)).toBe(false);
+        expect(() => removeAdmin(actingID)).toThrow()
     })
 
     it('should allow a ADMIN to remove an USER', () => {
@@ -276,23 +290,23 @@ describe('ADMIN Permissions Tests', () => {
     })
 
     it('should not allow a ADMIN to set an USER as an OWNER', () => {
-        expect(upgradeUserToOwner(actingID)).toBe(false);
+        expect(() => upgradeUserToOwner(actingID)).toThrow()
     })
 
     it('should not allow a ADMIN to set an ADMIN as an USER', () => {
-        expect(downGradeAdminToUser(actingID)).toBe(false);
+        expect(() => downGradeAdminToUser(actingID)).toThrow()
     })
 
     it('should not allow a ADMIN to set an ADMIN as an OWNER', () => {
-        expect(upgradeAdminToOwner(actingID)).toBe(false);
+        expect(() => upgradeAdminToOwner(actingID)).toThrow()
     })
 
     it('should not allow a ADMIN to set an OWNER as an USER', () => {
-        expect(downGradeOwnerToUser(actingID)).toBe(false);
+        expect(() => downGradeOwnerToUser(actingID)).toThrow()
     })
 
     it('should not allow a ADMIN to set an OWNER as an ADMIN', () => {
-        expect(downGradeOwnerToAdmin(actingID)).toBe(false);
+        expect(() => downGradeOwnerToAdmin(actingID)).toThrow()
     })
 
     it('should allow a ADMIN to leave the organization', () => {
@@ -308,7 +322,7 @@ describe('ADMIN Permissions Tests', () => {
     })
 
     it('should not allow a ADMIN to set himself as OWNER', () => {
-        expect(setSelfAsOwner(actingID)).toBe(false);
+        expect(() => setSelfAsOwner(actingID)).toThrow()
     })
 
     it('should allow a ADMIN to invite a USER', () => {
@@ -320,50 +334,50 @@ describe('ADMIN Permissions Tests', () => {
     })
 
     it('should not allow a ADMIN to invite an OWNER', () => {
-        expect(inviteOwner(actingID)).toBe(false);
+        expect(() => inviteOwner(actingID)).toThrow()
     })    
 })
 
 describe('USER Permissions Tests', () => {
     const actingID = '4'
     it('should not allow a USER to change name of the organization', () => {
-        expect(changeName(actingID)).toBe(false)
+        expect(() => changeName(actingID, 'USER')).toThrowError('Not allowed to change the name of this organization')
     })
 
     it('should not allow a USER to remove an OWNER', () => {
-        expect(removeOwner(actingID)).toBe(false);
+        expect(() =>removeOwner(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to remove an ADMIN', () => {
-        expect(removeAdmin(actingID)).toBe(false);
+        expect(() => removeAdmin(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to remove an USER', () => {
-        expect(removeUser(actingID)).toBe(false);
+        expect(() => removeUser(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an USER as an ADMIN', () => {
-        expect(upgradeUserToAdmin(actingID)).toBe(false);
+        expect(() => upgradeUserToAdmin(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an USER as an OWNER', () => {
-        expect(upgradeUserToOwner(actingID)).toBe(false);
+        expect(() => upgradeUserToOwner(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an ADMIN as an USER', () => {
-        expect(downGradeAdminToUser(actingID)).toBe(false);
+        expect(() => downGradeAdminToUser(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an ADMIN as an OWNER', () => {
-        expect(upgradeAdminToOwner(actingID)).toBe(false);
+        expect(() => upgradeAdminToOwner(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an OWNER as an USER', () => {
-        expect(downGradeOwnerToUser(actingID)).toBe(false);
+        expect(() => downGradeOwnerToUser(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set an OWNER as an ADMIN', () => {
-        expect(downGradeOwnerToAdmin(actingID)).toBe(false);
+        expect(() => downGradeOwnerToAdmin(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should allow a USER to leave the organization', () => {
@@ -371,26 +385,26 @@ describe('USER Permissions Tests', () => {
     })
 
     it('should not allow a USER to set himself as ADMIN', () => {
-        expect(setSelfAsAdmin(actingID)).toBe(false);
+        expect(() => setSelfAsAdmin(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to set himself as USER', () => {
-        expect(setSelfAsUser(actingID)).toBe(false);
+        expect(setSelfAsUser(actingID)).toBe(true)
     })
 
     it('should not allow a USER to set himself as OWNER', () => {
-        expect(setSelfAsOwner(actingID)).toBe(false);
+        expect(() => setSelfAsOwner(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to invite a USER', () => {
-        expect(inviteUser(actingID)).toBe(false);
+        expect(() => inviteUser(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to invite an ADMIN', () => {
-        expect(inviteAdmin(actingID)).toBe(false);
+        expect(() => inviteAdmin(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })
 
     it('should not allow a USER to invite an OWNER', () => {
-        expect(inviteOwner(actingID)).toBe(false);
+        expect(() =>inviteOwner(actingID)).toThrowError('As a user, you can only remove yourself from this organization');
     })    
 })
