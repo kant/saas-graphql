@@ -24,9 +24,15 @@ const server = new ApolloServer({
     },
   },
   context: async ({ req: { headers: { authorization } } }) => {
-    const jwtToken = authorization || '';
-    const decoded = await jwt.verify(jwtToken, config.token.secret, {algorithms: ['HS256']}, (err, decoded) => decoded);
-    return decoded
+    if (!authorization) {
+      return {}
+    } else {
+      const decoded = await jwt.verify(authorization, config.token.secret, {algorithms: ['HS256']}, (err, decoded) => {
+        if(err) console.log(err);
+        return decoded;
+      });
+      return decoded
+    }
   },
   introspection: true,
   playground: true
