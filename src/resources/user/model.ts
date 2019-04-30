@@ -1,13 +1,5 @@
 import bcrypt from 'bcryptjs';
-import mongoose, { Document } from 'mongoose';
-
-export interface IUser extends Document {
-  email?: String;
-  password?: String;
-  firstName?: String;
-  lastName?: String;
-  comparePassword?: (password: string) => boolean;
-}
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -59,4 +51,4 @@ userSchema.method('comparePassword', function comparePassword(
   return bcrypt.compare(candidate, this.password);
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model<IUser>('User', userSchema);

@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose from 'mongoose';
 import { gql } from 'apollo-server'
 import Organization from './model';
 import { IResolverSet } from '../root'
@@ -52,13 +52,13 @@ export const organizationTypeDefs = gql`
 
 export const organizationResolvers: IResolverSet = {
   Query: {
-    async organizations(_, {}, context) {
-      const orgs: Document[] = await Organization.find({"members.user": ObjectId(context.user)})
+    async organizations(_, {}, ctx) {
+      const orgs = await Organization.find({"members.user": ObjectId(ctx.token.userId)})
         .populate('members.user')
       return orgs.map(org => org.toObject());
     },
-    async organization(_, { id }, context) {
-      const organization: Document | null = await Organization.findOne({ _id: id, 'members.user': ObjectId(context.user)})
+    async organization(_, { id }, ctx) {
+      const organization = await Organization.findOne({ _id: id, 'members.user': ObjectId(ctx.token.userId)})
       .populate('members.user')
       if(organization) {
         return organization.toObject()
@@ -68,20 +68,20 @@ export const organizationResolvers: IResolverSet = {
     },
   },
   Mutation: {
-    async addOrganization(_, { input }, context) {
+    async addOrganization(_, { input }, ctx) {
       input.members = [{
         role: 'OWNER',
-        user: context.user
+        user: ctx.token.userId
       }]
-      const organization: Document = await Organization.create(input);
+      const organization = await Organization.create(input);
       return organization.toObject();
     },
-    async editOrganization(_, { input }, context) {
-      const organization: Document | null = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId(context.user)})
+    async editOrganization(_, { input }, ctx) {
+      const organization = await Organization.findOne({ _id: input.organization, 'members.user': ObjectId(ctx.token.userId)})
         .populate('members.user');
       if (organization) {
-        membersPermissionFilter(mapOrganizationToInput(organization), input, context.user)
-        const newOrganization = await Organization.findOneAndUpdate({ _id: input.organization, 'members.user': ObjectId(context.user)}, input, {new: true })
+        membersPermissionFilter(mapOrganizationToInput(organization as IOrganization), input, ctx.token.userId)
+        const newOrganization = await Organization.findOneAndUpdate({ _id: input.organization, 'members.user': ObjectId(ctx.token.userId)}, input, {new: true })
           .populate('members.user')
         return newOrganization;
       } else {

@@ -1,13 +1,12 @@
 import R from 'ramda'
-import { IOrganization } from './model';
 
 interface IMemberInput {
-    role: String;
-    user: String;
+    role: string;
+    user: string | number;
 }
 
 export interface IPermissionInput {
-    name: String;
+    name: string;
     members: IMemberInput[]
 }
 
@@ -16,7 +15,7 @@ const isAdmin = R.propEq('role', 'ADMIN');
 const isSameUser = (a: IMemberInput, b: IMemberInput) => a.user === b.user;
 const isSameUserAndRole = (a: IMemberInput, b: IMemberInput) => a.role === b.role && a.user === b.user;
 
-export const mapOrganizationToInput: ((org: any) => IPermissionInput) = (a) => {
+export const mapOrganizationToInput: ((org: IOrganization) => IPermissionInput) = (a) => {
     const output = {
         name: a.name,
         members: a.members.map(i => ({ role: i.role, user: i.user.id }))

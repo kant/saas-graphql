@@ -1,26 +1,25 @@
-import { membersPermissionFilter, mapOrganizationToInput } from  './permissionModule';
-import { IOrganization } from './model';
+import { membersPermissionFilter, mapOrganizationToInput, IPermissionInput } from  './permissionModule';
 
-export const generateState = () => ({
+export const generateState: () => IPermissionInput = () => ({
     name: 'INITIAL NAME',
     members: [{
         role: 'OWNER',
-        user: '0',
+        user: 0,
     }, {
         role: 'OWNER',
-        user: '1',
+        user: 1,
     },{
         role: 'ADMIN',
-        user: '2',
+        user: 2,
     },{
         role: 'ADMIN',
-        user: '3',
+        user: 3,
     },{
         role: 'USER',
-        user: '4',
+        user: 4,
     },{
         role: 'USER',
-        user: '5',
+        user: 5,
     }]
 })
 
@@ -28,12 +27,12 @@ const passiveOwner = 1
 const passiveAdmin = 3
 const passiveUser = 5
 
-const changeName = (actingID: string, role: string) => {
+const changeName = (actingID: number, role: string) => {
     const initialState =  {
         name: 'TEST',
         members: [{
             role: 'OWNER',
-            user: '0'
+            user: 0
         },{
             role,
             user: actingID
@@ -43,134 +42,134 @@ const changeName = (actingID: string, role: string) => {
         name: 'NEW TEST NAME',
         members: [{
             role: 'OWNER',
-            user: '0'
+            user: 0
         },{
             role,
             user: actingID
         }]
     }
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const removeOwner = (actingID: string) => {
+const removeOwner = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveOwner,1);
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const removeAdmin = (actingID: string) => {
+const removeAdmin = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveAdmin,1);
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const removeUser = (actingID: string) => {
+const removeUser = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.splice(passiveUser,1);
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const upgradeUserToAdmin = (actingID: string) => {
+const upgradeUserToAdmin = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveUser].role = 'ADMIN'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const upgradeUserToOwner = (actingID: string) => {
+const upgradeUserToOwner = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveUser].role = 'OWNER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const downGradeAdminToUser = (actingID: string) => {
+const downGradeAdminToUser = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveAdmin].role = 'USER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const upgradeAdminToOwner = (actingID: string) => {
+const upgradeAdminToOwner = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveAdmin].role = 'OWNER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const downGradeOwnerToUser = (actingID: string) => {
+const downGradeOwnerToUser = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveOwner].role = 'USER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const downGradeOwnerToAdmin = (actingID: string) => {
+const downGradeOwnerToAdmin = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[passiveOwner].role = 'ADMIN'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const removeSelf = (actingID: string) => {
+const removeSelf = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
-    newState.members.splice(parseInt(actingID, 10),1);
-    return membersPermissionFilter(initialState, newState, actingID)
+    newState.members.splice(actingID,1);
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const setSelfAsUser = (actingID: string) => {
+const setSelfAsUser = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[actingID].role = 'USER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const setSelfAsAdmin = (actingID: string) => {
+const setSelfAsAdmin = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[actingID].role = 'ADMIN'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const setSelfAsOwner = (actingID: string) => {
+const setSelfAsOwner = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members[actingID].role = 'OWNER'
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const inviteUser = (actingID: string) => {
+const inviteUser = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
         role: 'USER',
         user: 'new'
     })
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const inviteAdmin = (actingID: string) => {
+const inviteAdmin = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
         role: 'ADMIN',
         user: 'new'
     })
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
-const inviteOwner = (actingID: string) => {
+const inviteOwner = (actingID: number) => {
     const initialState = generateState()
     const newState = generateState();
     newState.members.push({
         role: 'OWNER',
         user: 'new'
     })
-    return membersPermissionFilter(initialState, newState, actingID)
+    return membersPermissionFilter(initialState, newState, actingID.toString())
 }
 
 describe('Map Organization To MemberInput', () => {
@@ -191,12 +190,12 @@ describe('Map Organization To MemberInput', () => {
                 user: 'testId'
             }]
         }
-        expect(mapOrganizationToInput(source)).toEqual(expected)
+        expect(mapOrganizationToInput(source as IOrganization)).toEqual(expected)
     })
 })
 
 describe('OWNER Permissions Tests', () => {
-    const actingID = '0'
+    const actingID = 0
     it('should allow an OWNER to change name of the organization', () => {
         expect(changeName(actingID, 'OWNER')).toBe(true)
     })
@@ -246,7 +245,7 @@ describe('OWNER Permissions Tests', () => {
         initialState.members.splice(1, 1)
         const newState = generateState();
         newState.members.splice(0,2);
-        const result = () => membersPermissionFilter(initialState, newState, actingID)
+        const result = () => membersPermissionFilter(initialState, newState, actingID.toString())
         expect(result).toThrowError('Can not leave an organization if you are the last owner, make somebody else owner first.');
     })
 
@@ -276,7 +275,7 @@ describe('OWNER Permissions Tests', () => {
 })
 
 describe('ADMIN Permissions Tests', () => {
-    const actingID = '2'
+    const actingID = 2
     it('should not allow a ADMIN to change name of the organization', () => {
         expect(() => changeName(actingID, 'ADMIN')).toThrowError('Not allowed to change the name of this organization')
     })
@@ -347,7 +346,7 @@ describe('ADMIN Permissions Tests', () => {
 })
 
 describe('USER Permissions Tests', () => {
-    const actingID = '4'
+    const actingID = 4
     it('should not allow a USER to change name of the organization', () => {
         expect(() => changeName(actingID, 'USER')).toThrowError('Not allowed to change the name of this organization')
     })

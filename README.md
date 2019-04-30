@@ -65,7 +65,20 @@ mutation login {
 }
 ```
 
-This will return you the JWT token which needs to be attached to every subsequent call made to the GraphQL endpoint, as it is used to check permissions.
+This will return you the JWT token and set the related cookie which needs to be attached to every subsequent call made to the GraphQL endpoint, as it is used to check permissions.
+In Apollo-Client for example it can be done like so:
+```
+// with-apollo.ts
+
+const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    link: createHttpLink({
+        uri: 'http://localhost:3000',
+        credentials: 'include'
+    }),
+    ssrMode: true
+});
+```
 
 
 ## Permissions

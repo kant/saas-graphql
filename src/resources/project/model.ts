@@ -1,9 +1,4 @@
 import mongoose, { Document } from 'mongoose';
-import { IOrganization } from '../organization/model'
-
-export interface IProject extends Document {
-  organization?: IOrganization;
-}
 
 const projectSchema = new mongoose.Schema({
   name: {
@@ -19,4 +14,4 @@ const projectSchema = new mongoose.Schema({
 
 projectSchema.set('toObject', { getters: true, virtuals: true });
 
-export default mongoose.model('Project', projectSchema);
+export default mongoose.model<IProject>('Project', projectSchema);

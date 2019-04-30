@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User, { IUser } from './model';
+import User from './model';
 import { gql } from 'apollo-server'
 import config from '../../config';
 
@@ -43,27 +43,32 @@ export const userTypeDefs = gql`
 
 export const userResolvers: IResolverSet = {
   Query: {
-    async me(_, {}, context) {
-      const user: IUser | null = await User.findById(context.user)
+    async me(_, {}, ctx) {
+      const user = await User.findById(ctx.token.userId)
       return user ? user.toObject() : null;
     },
   },
   Mutation: {
     async createUser(_, { input }) {
-      const user: IUser | null = await User.create(input);
+      const user = await User.create(input);
       return user;
     },
-    async editUser(_, { input }, context) {
-      const user: IUser | null = await User.findOneAndUpdate({ _id: context.user },input, { new: true})
+    async editUser(_, { input }, ctx) {
+      const user = await User.findOneAndUpdate({ _id: ctx.token.userId },input, { new: true})
       return user ? user.toObject() : null;
     },
-    async loginUser(_, { input }) {
+    async loginUser(_, { input }, { res }) {
       const { email, password } = input;
-      const user: IUser | null = await User.findOne({ email })
+      const user = await User.findOne({ email })
       const match: boolean = user && user.comparePassword ? await user.comparePassword(password) : false
       if (user && match) {
         const userObject = user.toObject();
-        userObject.jwt = jwt.sign({ user: userObject.id }, config.token.secret, { algorithm: 'HS256' });
+        userObject.jwt = jwt.sign({ userId: userObject.id }, config.token.secret, { algorithm: 'HS256' });
+        res.cookie('token', userObject.jwt, {
+            maxAge: 60 * 60 * 24 * 7,
+            secure: process.env.NODE_ENV === 'production' ? true : false,
+            httpOnly: true
+          })
         return userObject
       }
       throw new Error('Not Authorised.');

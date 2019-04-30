@@ -1,15 +1,4 @@
 import mongoose, { Document } from 'mongoose';
-import { IUser } from '../user/model';
-
-export interface IMember {
-    role: String;
-    user: IUser;
-}
-
-export interface IOrganization extends Document {
-  name: String;
-  members: IMember[];
-}
 
 const organizationSchema = new mongoose.Schema({
   name: {
@@ -28,4 +17,4 @@ const organizationSchema = new mongoose.Schema({
 
 organizationSchema.set('toObject', { getters: true, virtuals: true });
 
-export default mongoose.model('Organization', organizationSchema);
+export default mongoose.model<IOrganization>('Organization', organizationSchema);
