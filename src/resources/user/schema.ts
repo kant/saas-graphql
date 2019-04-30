@@ -38,6 +38,7 @@ export const userTypeDefs = gql`
     editUser(input: UserInput!): User
     deleteUser(id: String!): User
     loginUser(input: LoginInput!): User!
+    logOut: Boolean
   }
 `;
 
@@ -72,6 +73,10 @@ export const userResolvers: IResolverSet = {
         return userObject
       }
       throw new Error('Not Authorised.');
+    },
+    async logOut(_, {}, { res }) {
+      res.clearCookie('token')
+      return true
     },
   },
 };
