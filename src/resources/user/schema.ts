@@ -64,12 +64,19 @@ export const userResolvers: IResolverSet = {
       const match: boolean = user && user.comparePassword ? await user.comparePassword(password) : false
       if (user && match) {
         const userObject = user.toObject();
-        userObject.jwt = jwt.sign({ userId: userObject.id }, config.token.secret, { algorithm: 'HS256' });
-        res.cookie('token', userObject.jwt, {
-            maxAge: 60 * 60 * 24 * 7,
-            secure: process.env.NODE_ENV === 'production' ? true : false,
-            httpOnly: true
-          })
+        const token = jwt.sign({ userId: userObject.id }, config.token.secret, { algorithm: 'HS256' });
+        const tokenSplit = token.split('.');
+        res.cookie('tokenHeaderPayload', `${tokenSplit[0]}.${tokenSplit[1]}`, {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          secure: false,
+          httpOnly: false
+        })
+        res.cookie('tokenSignature', `${tokenSplit[2]}`, {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          secure: process.env.NODE_ENV === 'production' ? true : false,
+          httpOnly: true
+        })
+        userObject.jwt = token;
         return userObject
       }
       throw new Error('Not Authorised.');

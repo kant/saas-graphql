@@ -30,7 +30,7 @@ const server = new ApolloServer({
   },
   context: async ({ req, res }) => {
     const cookies = cookie.parse(req.headers.cookie || '');
-    const token = cookies.token ? jwt.verify(cookies.token, config.token.secret, { algorithms: ['HS256'] }) : {};
+    const token = cookies.tokenHeaderPayload && cookies.tokenSignature ? jwt.verify(`${cookies.tokenHeaderPayload}.${cookies.tokenSignature}`, config.token.secret, { algorithms: ['HS256'] }) : {};
     return { req, res, token }
   },
   introspection: true,
